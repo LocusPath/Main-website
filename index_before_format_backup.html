@@ -12048,7 +12048,7 @@
         }
 
         // ----------------------------------------------------
-        // Angled Carousel Navigation and Touch Swipe Logic
+        // Angled Carousel Navigation and Touch Swipe Logic (Infinite Loop)
         // ----------------------------------------------------
         const carouselCards = document.querySelectorAll(".angled-carousel__card");
         const carouselLeftBtn = document.querySelector(".angled-carousel__controls--left");
@@ -12060,7 +12060,15 @@
           function updateAngledCarousel() {
             const isMobile = window.innerWidth <= 768;
             carouselCards.forEach((card, idx) => {
-              const diff = idx - carouselCurrentIndex;
+              let diff = idx - carouselCurrentIndex;
+
+              // Wrap diff to the range [-2, 2] for infinite looping
+              if (diff > 2) {
+                diff -= 5;
+              } else if (diff < -2) {
+                diff += 5;
+              }
+
               let opacity = 0;
               let transform = "";
               let zIndex = 0;
@@ -12126,31 +12134,27 @@
             });
           });
 
-          // PC Left Control Click
+          // PC Left Control Click (Infinite loop)
           if (carouselLeftBtn) {
             carouselLeftBtn.addEventListener("click", function (e) {
               e.preventDefault();
               e.stopPropagation();
-              if (carouselCurrentIndex > 0) {
-                carouselCurrentIndex--;
-                updateAngledCarousel();
-              }
+              carouselCurrentIndex = (carouselCurrentIndex > 0) ? carouselCurrentIndex - 1 : carouselCards.length - 1;
+              updateAngledCarousel();
             });
           }
 
-          // PC Right Control Click
+          // PC Right Control Click (Infinite loop)
           if (carouselRightBtn) {
             carouselRightBtn.addEventListener("click", function (e) {
               e.preventDefault();
               e.stopPropagation();
-              if (carouselCurrentIndex < carouselCards.length - 1) {
-                carouselCurrentIndex++;
-                updateAngledCarousel();
-              }
+              carouselCurrentIndex = (carouselCurrentIndex < carouselCards.length - 1) ? carouselCurrentIndex + 1 : 0;
+              updateAngledCarousel();
             });
           }
 
-          // Swipe support on Mobile Touchscreens
+          // Swipe support on Mobile Touchscreens (Infinite loop)
           const carouselContainer = document.querySelector(".angled-carousel");
           if (carouselContainer) {
             let touchStartX = 0;
@@ -12164,17 +12168,13 @@
               touchEndX = e.changedTouches[0].screenX;
               const swipeThreshold = 40;
               if (touchEndX < touchStartX - swipeThreshold) {
-                // Swipe Left -> Next card
-                if (carouselCurrentIndex < carouselCards.length - 1) {
-                  carouselCurrentIndex++;
-                  updateAngledCarousel();
-                }
+                // Swipe Left -> Next card (looping)
+                carouselCurrentIndex = (carouselCurrentIndex < carouselCards.length - 1) ? carouselCurrentIndex + 1 : 0;
+                updateAngledCarousel();
               } else if (touchEndX > touchStartX + swipeThreshold) {
-                // Swipe Right -> Previous card
-                if (carouselCurrentIndex > 0) {
-                  carouselCurrentIndex--;
-                  updateAngledCarousel();
-                }
+                // Swipe Right -> Previous card (looping)
+                carouselCurrentIndex = (carouselCurrentIndex > 0) ? carouselCurrentIndex - 1 : carouselCards.length - 1;
+                updateAngledCarousel();
               }
             }, { passive: true });
           }
