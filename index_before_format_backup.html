@@ -1641,10 +1641,23 @@
         height: 44px;
         display: flex;
         align-items: center;
+        justify-content: space-between;
         padding: 0 16px;
         border-bottom: 1px solid rgba(0, 0, 0, 0.08);
         position: relative;
         user-select: none;
+        box-sizing: border-box;
+      }
+      .browser-header-left {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        width: 80px;
+        flex-shrink: 0;
+      }
+      .browser-header-right {
+        width: 80px;
+        flex-shrink: 0;
       }
       .browser-window-dots {
         display: flex;
@@ -1669,7 +1682,6 @@
       .browser-navigation-arrows {
         display: flex;
         gap: 12px;
-        margin-left: 20px;
         color: #aeaeae;
       }
       .browser-address-bar {
@@ -1677,16 +1689,16 @@
         border: 1px solid rgba(0, 0, 0, 0.06);
         border-radius: 6px;
         height: 28px;
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        width: calc(100% - 160px);
+        flex: 1;
         max-width: 500px;
+        margin: 0;
         display: flex;
         align-items: center;
+        justify-content: center;
         padding: 0 12px;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+        min-width: 0;
+        box-sizing: border-box;
       }
       .lock-icon {
         color: #10b981;
@@ -2605,6 +2617,15 @@
           margin-left: -24px !important;
           margin-right: -24px !important;
         }
+        .browser-header-left {
+          width: 40px !important;
+        }
+        .browser-header-right {
+          width: 40px !important;
+        }
+        .browser-navigation-arrows {
+          display: none !important;
+        }
       }
       @media (max-width: 480px) {
         .contact-card {
@@ -2613,9 +2634,6 @@
         .showcase-container {
           padding: 0 16px !important;
         }
-        .browser-navigation-arrows {
-          display: none !important;
-        }
         .browser-mockup-header {
           padding: 0 10px !important;
           height: 34px !important;
@@ -2623,7 +2641,6 @@
         .browser-address-bar {
           height: 22px !important;
           padding: 0 8px !important;
-          width: calc(100% - 80px) !important;
         }
         .browser-window-dots {
           gap: 6px !important;
@@ -7843,36 +7860,38 @@
               <div class="showcase-preview">
                 <div class="browser-mockup">
                   <div class="browser-mockup-header">
-                    <div class="browser-window-dots">
-                      <span class="dot dot-red"></span>
-                      <span class="dot dot-yellow"></span>
-                      <span class="dot dot-green"></span>
-                    </div>
-                    <div class="browser-navigation-arrows">
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <polyline points="15 18 9 12 15 6"></polyline>
-                      </svg>
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <polyline points="9 18 15 12 9 6"></polyline>
-                      </svg>
+                    <div class="browser-header-left">
+                      <div class="browser-window-dots">
+                        <span class="dot dot-red"></span>
+                        <span class="dot dot-yellow"></span>
+                        <span class="dot dot-green"></span>
+                      </div>
+                      <div class="browser-navigation-arrows">
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                      </div>
                     </div>
                     <div class="browser-address-bar">
                       <span class="lock-icon">
@@ -7899,6 +7918,7 @@
                         >maison-elegance-phi.vercel.app</span
                       >
                     </div>
+                    <div class="browser-header-right"></div>
                   </div>
                   <div class="browser-mockup-content">
                     <iframe
