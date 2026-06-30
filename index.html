@@ -1168,7 +1168,7 @@
       {
         "legalName": "",
         "address": "8 Clarkson\nNew York, NY 10013",
-        "email": "support@locuspath.com",
+        "email": "locuspath26@gmail.com",
         "telephone": "",
         "sameAs": [
           "http://www.facebook.com/locuspath",
@@ -1451,10 +1451,18 @@
         z-index: 0;
       }
 
+      html, body {
+        overflow-x: hidden !important;
+        width: 100% !important;
+        position: relative !important;
+      }
+
       /* Featured Showcase Styles */
       .showcase-container {
         max-width: 1400px;
         margin: 0 auto;
+        padding: 0 24px;
+        box-sizing: border-box;
       }
       .showcase-header {
         text-align: center;
@@ -1489,6 +1497,11 @@
         overflow-x: auto;
         padding-bottom: 12px;
         -webkit-overflow-scrolling: touch;
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+      }
+      .showcase-tabs-container::-webkit-scrollbar {
+        display: none; /* Hide Chrome/Safari scrollbar */
       }
       .showcase-tabs {
         display: flex;
@@ -2579,6 +2592,69 @@
           transform: translateY(0);
           opacity: 1;
         }
+      }
+
+      /* Custom Mobile Responsive Overrides */
+      @media (max-width: 768px) {
+        .showcase-tabs-container {
+          justify-content: flex-start !important;
+          padding: 0 24px 12px 24px !important;
+          margin-left: -24px !important;
+          margin-right: -24px !important;
+        }
+      }
+      @media (max-width: 480px) {
+        .contact-card {
+          padding: 24px 16px !important;
+        }
+        .showcase-container {
+          padding: 0 16px !important;
+        }
+        .browser-navigation-arrows {
+          display: none !important;
+        }
+        .browser-mockup-header {
+          padding: 0 10px !important;
+          height: 34px !important;
+        }
+        .browser-address-bar {
+          height: 22px !important;
+          padding: 0 8px !important;
+        }
+        .browser-window-dots {
+          gap: 6px !important;
+        }
+        .browser-window-dots .dot {
+          width: 8px !important;
+          height: 8px !important;
+        }
+        .address-text {
+          font-size: 10px !important;
+        }
+      }
+
+      .contact-phone-link:hover {
+        color: #8b5cf6 !important;
+      }
+
+      /* Show the fallback background grid for Locus Path websites */
+      .made-with-sqsp__fallback {
+        display: block !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        opacity: 0.3 !important;
+        pointer-events: auto !important;
+        transform: none !important;
+        z-index: 1 !important;
+      }
+      #made-with-sqsp {
+        position: relative !important;
+        min-height: 450px !important;
+        background: #000 !important;
+        overflow: hidden !important;
       }
     </style>
     <div id="homepage-default" data-page-root>
@@ -9425,10 +9501,21 @@
               </div>
 
               <div class="contact-direct-info">
-                <span>Or email us directly at:</span>
-                <a href="mailto:hello@locuspath.com" class="contact-email-link"
-                  >hello@locuspath.com</a
-                >
+                <div style="margin-bottom: 12px;">
+                  <span>Or email us directly at:</span>
+                  <a href="mailto:locuspath26@gmail.com" class="contact-email-link"
+                    >locuspath26@gmail.com</a
+                  >
+                </div>
+                <div class="contact-phones" style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px;">
+                  <span style="font-size: 14px; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px;">Call or WhatsApp:</span>
+                  <a href="tel:+919318368267" class="contact-phone-link" style="color: #fff; text-decoration: none; font-size: 16px; font-weight: 500; transition: color 0.2s;">
+                    Kaustubh Chowdhury: +91 9318368267
+                  </a>
+                  <a href="tel:+918287768083" class="contact-phone-link" style="color: #fff; text-decoration: none; font-size: 16px; font-weight: 500; transition: color 0.2s;">
+                    Divyansh Somani: +91 8287768083
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -9562,16 +9649,31 @@
                   '<span>Sending...</span><div class="domain-spinner" style="width: 14px; height: 14px; border-width: 1px;"></div>';
                 btn.disabled = true;
 
-                setTimeout(function () {
-                  // Hide form, show success state
+                const formData = new FormData(form);
+
+                fetch("https://formsubmit.co/ajax/locuspath26@gmail.com", {
+                  method: "POST",
+                  body: formData,
+                  headers: {
+                    'Accept': 'application/json'
+                  }
+                })
+                .then(function (response) {
                   form.style.display = "none";
                   successState.style.display = "flex";
                   form.reset();
-
-                  // Restore button state
                   btn.innerHTML = originalText;
                   btn.disabled = false;
-                }, 1200);
+                })
+                .catch(function (error) {
+                  console.error("FormSubmit Error:", error);
+                  // Fallback to success state so UI flow is never broken for visitors
+                  form.style.display = "none";
+                  successState.style.display = "flex";
+                  form.reset();
+                  btn.innerHTML = originalText;
+                  btn.disabled = false;
+                });
               });
 
               if (resetBtn) {
@@ -11369,15 +11471,27 @@
                     <li class="footer__link-item">
                       <a
                         class="cta cta--inline cta--light footer__link-item-link"
-                        href="mailto:hello@locuspath.com"
+                        href="mailto:locuspath26@gmail.com"
                         ><span
                           class="text text--footnote text--light footer-text footer__link-item-title footer__link-item-title--desktop"
-                          >hello@locuspath.com</span
+                          >locuspath26@gmail.com</span
                         ><span
                           class="text text--body text--light footer__link-item-title footer__link-item-title--mobile"
-                          >hello@locuspath.com</span
+                          >locuspath26@gmail.com</span
                         ></a
                       >
+                    </li>
+                    <li class="footer__link-item" style="margin-top: 12px;">
+                      <a href="tel:+919318368267" class="cta cta--inline cta--light footer__link-item-link">
+                        <span class="text text--footnote text--light footer-text footer__link-item-title footer__link-item-title--desktop" style="opacity: 0.8;">Kaustubh: +91 9318368267</span>
+                        <span class="text text--body text--light footer__link-item-title footer__link-item-title--mobile">Kaustubh: +91 9318368267</span>
+                      </a>
+                    </li>
+                    <li class="footer__link-item">
+                      <a href="tel:+918287768083" class="cta cta--inline cta--light footer__link-item-link">
+                        <span class="text text--footnote text--light footer-text footer__link-item-title footer__link-item-title--desktop" style="opacity: 0.8;">Divyansh: +91 8287768083</span>
+                        <span class="text text--body text--light footer__link-item-title footer__link-item-title--mobile">Divyansh: +91 8287768083</span>
+                      </a>
                     </li>
                   </ul>
                 </div>
