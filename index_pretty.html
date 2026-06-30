@@ -1677,9 +1677,12 @@
         border: 1px solid rgba(0, 0, 0, 0.06);
         border-radius: 6px;
         height: 28px;
-        flex-grow: 1;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: calc(100% - 160px);
         max-width: 500px;
-        margin: 0 auto;
         display: flex;
         align-items: center;
         padding: 0 12px;
@@ -2620,6 +2623,7 @@
         .browser-address-bar {
           height: 22px !important;
           padding: 0 8px !important;
+          width: calc(100% - 80px) !important;
         }
         .browser-window-dots {
           gap: 6px !important;
