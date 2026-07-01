@@ -2694,8 +2694,35 @@
         .angled-carousel__controls {
           display: none !important; /* Hide artificial arrows to match PC style */
         }
-      }    </style>
-    <div id="homepage-default" data-page-root>
+      }
+      /* Style overrides for interactive canvas particles */
+      #conversion {
+        position: relative !important;
+        overflow: hidden !important;
+        background: #000 !important;
+      }
+      #conversion-particles-canvas {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        z-index: 1 !important;
+        pointer-events: none !important; /* Let clicks pass through to text and buttons */
+      }
+      .conversion__title,
+      .conversion__body,
+      .conversion-component__cta,
+      .conversion__cta {
+        position: relative !important;
+        z-index: 5 !important;
+      }
+      .conversion__centered-video-desktop,
+      .conversion__centered-video-mobile {
+        display: none !important;
+      }
+    </style>
+    <div id="homepage-default"  data-page-root>
       <header
         id="global-navigation"
         class="global-navigation global-navigation--not-sticky global-navigation--nav-items-visible global-navigation--loaded"
@@ -12115,6 +12142,164 @@
               }
             }
           });
+        }
+
+        // ----------------------------------------------------
+        // Interactive 3D Particle Sphere Background (CTA Section)
+        // ----------------------------------------------------
+        const conversionSection = document.getElementById("conversion");
+        if (conversionSection) {
+          const particlesCanvas = document.createElement("canvas");
+          particlesCanvas.id = "conversion-particles-canvas";
+          conversionSection.appendChild(particlesCanvas);
+
+          const particlesCtx = particlesCanvas.getContext("2d");
+          let pWidth = particlesCanvas.width = conversionSection.clientWidth;
+          let pHeight = particlesCanvas.height = conversionSection.clientHeight;
+
+          window.addEventListener("resize", function () {
+            pWidth = particlesCanvas.width = conversionSection.clientWidth;
+            pHeight = particlesCanvas.height = conversionSection.clientHeight;
+          });
+
+          const pCount = 800;
+          const pList = [];
+          const pRadius = Math.min(pWidth, pHeight) * 0.38;
+          const pFov = 350;
+
+          // Mouse tracking
+          let pMouse = { x: null, y: null, active: false };
+          conversionSection.addEventListener("mousemove", function (e) {
+            const rect = conversionSection.getBoundingClientRect();
+            pMouse.x = e.clientX - rect.left;
+            pMouse.y = e.clientY - rect.top;
+            pMouse.active = true;
+          });
+          conversionSection.addEventListener("mouseleave", function () {
+            pMouse.active = false;
+          });
+
+          // Touch tracking on mobile
+          conversionSection.addEventListener("touchmove", function (e) {
+            const rect = conversionSection.getBoundingClientRect();
+            pMouse.x = e.touches[0].clientX - rect.left;
+            pMouse.y = e.touches[0].clientY - rect.top;
+            pMouse.active = true;
+          }, { passive: true });
+          conversionSection.addEventListener("touchend", function () {
+            pMouse.active = false;
+          }, { passive: true });
+
+          // Generate particles using Fibonacci Sphere algorithm for uniform distribution
+          for (let i = 0; i < pCount; i++) {
+            const y3d = 2 * (i / (pCount - 1)) - 1;
+            const r = Math.sqrt(1 - y3d * y3d);
+            const theta = 3.883203 * i;
+
+            const x3d = Math.cos(theta) * r;
+            const z3d = Math.sin(theta) * r;
+
+            pList.push({
+              tx: x3d * pRadius,
+              ty: y3d * pRadius,
+              tz: z3d * pRadius,
+              x: x3d * pRadius,
+              y: y3d * pRadius,
+              z: z3d * pRadius,
+              vx: 0,
+              vy: 0,
+              vz: 0,
+              size: Math.random() * 1.6 + 0.7
+            });
+          }
+
+          const rotY = 0.0035;
+          const rotX = 0.0012;
+
+          function animateParticles() {
+            particlesCtx.clearRect(0, 0, pWidth, pHeight);
+
+            const cx = pWidth / 2;
+            const cy = pHeight / 2;
+
+            const cosY = Math.cos(rotY);
+            const sinY = Math.sin(rotY);
+            const cosX = Math.cos(rotX);
+            const sinX = Math.sin(rotX);
+
+            // Sort particles by depth (back to front rendering)
+            pList.sort((a, b) => b.z - a.z);
+
+            pList.forEach(p => {
+              // Rotate target positions
+              let x1 = p.tx * cosY - p.tz * sinY;
+              let z1 = p.tx * sinY + p.tz * cosY;
+              let y1 = p.ty * cosX - z1 * sinX;
+              let z2 = p.ty * sinX + z1 * cosX;
+
+              p.tx = x1;
+              p.ty = y1;
+              p.tz = z2;
+
+              // Apply spring physics towards rotating target positions
+              const spring = 0.065;
+              p.vx += (p.tx - p.x) * spring;
+              p.vy += (p.ty - p.y) * spring;
+              p.vz += (p.tz - p.z) * spring;
+
+              // Mouse attraction/repelling in projected 2D space
+              const scale = pFov / (pFov + p.z);
+              const sx = cx + p.x * scale;
+              const sy = cy + p.y * scale;
+
+              if (pMouse.active) {
+                const dx = sx - pMouse.x;
+                const dy = sy - pMouse.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const repelRadius = 130;
+
+                if (dist < repelRadius) {
+                  const force = (repelRadius - dist) / repelRadius;
+                  const angle = Math.atan2(dy, dx);
+                  const pushX = Math.cos(angle) * force * 16;
+                  const pushY = Math.sin(angle) * force * 16;
+
+                  p.vx += pushX;
+                  p.vy += pushY;
+                  p.vz -= force * 6; // push backward slightly
+                }
+              }
+
+              // Apply velocity and friction
+              const friction = 0.82;
+              p.vx *= friction;
+              p.vy *= friction;
+              p.vz *= friction;
+
+              p.x += p.vx;
+              p.y += p.vy;
+              p.z += p.vz;
+
+              // Render projected particle
+              const finalScale = pFov / (pFov + p.z);
+              const px = cx + p.x * finalScale;
+              const py = cy + p.y * finalScale;
+
+              if (px >= 0 && px <= pWidth && py >= 0 && py <= pHeight) {
+                const r = p.size * finalScale;
+                const alpha = Math.max(0.08, Math.min(0.95, (pFov - p.z) / (pFov * 1.6)));
+
+                particlesCtx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+                particlesCtx.beginPath();
+                particlesCtx.arc(px, py, r, 0, Math.PI * 2);
+                particlesCtx.fill();
+              }
+            });
+
+            requestAnimationFrame(animateParticles);
+          }
+
+          animateParticles();
         }
       });
     </script>
